@@ -1,0 +1,502 @@
+
+import { useEffect, useState } from "react";
+import ReactMarkdown from 'react-markdown'
+
+import { useParams } from "react-router-dom";
+ 
+export default function Post() {
+   
+    const {slug}=useParams()
+    console.log(slug)
+
+  let [post, setPost] = useState({})
+  let [loading,setLoading]=useState(false)
+  async function fetchPost() {
+    setLoading(true)
+    let request = `http://localhost:1337/api/newsposts?populate=*&filters[slug][$eq]=${slug}`
+    let response = await fetch(request)
+    let postResponse = await response.json()
+    setPost(postResponse.data[0])
+    setLoading(false)
+  }
+  useEffect(() => {
+    fetchPost();
+  },[])
+
+  if (loading)
+  return <>loading...</>;
+
+  return (
+
+    <div className="col-md-8">
+      <h1>here m here</h1>
+      
+      
+        <div className="dot mb-3">
+          
+            <div className="newspost">
+              <div className="newspost-post">
+                {/* <img src={"http://localhost:1337" + post.attributes.newsImage.data.attributes.url}
+                  width="200" height="134" alt="Newspost post" /> */}
+              </div>
+              <div className="newspost-body">
+                <strong className="d-inline-block mb-2 text-primary placeholder-glow">{post.attributes.newsTitle}</strong>
+                <h2 className="placeholder-glow">{post.attributes.newsTagline}</h2>
+                <p className="placeholder-glow">
+                  <ReactMarkdown children={post.attributes.newsDescription} /></p>
+                  <span className="text-muted">May , 5/19/2023 , 11:40 AM</span>
+
+              </div>
+            </div>
+          
+        </div>
+     
+    </div >
+
+  )
+}
+
+
+
+
+
+post........
+
+import { useEffect, useState } from "react";
+import ReactMarkdown from 'react-markdown'
+import { Link } from "react-router-dom";
+import Card from "../placeholders/Card";
+
+export default function Post() {
+
+  let [post, setPost] = useState([])
+  let [loading,setLoading]=useState(false)
+  async function fetchPost() {
+    setLoading(true)
+    let response = await fetch('http://localhost:1337/api/newsposts?populate=*')
+    let postResponse = await response.json()
+    setPost(postResponse.data)
+    setLoading(false)
+    console.log(postResponse.data)
+  }
+  useEffect(() => {
+    fetchPost()
+  }, [])
+
+  if (loading)
+  return <><h1>loading</h1></>;
+
+  return (
+    <div className="col-md-8">
+      
+      
+      {
+        post.map(postItem => 
+        <div key={postItem.id} className="dot mb-3">
+          <Link to={`/${postItem.attributes.slug}`} className="link link-dark"  >
+            <div className="newspost">
+              <div className="newspost-post">
+                <img src={"http://localhost:1337" + postItem.attributes.newsImage.data.attributes.url}
+                  width="200" height="134" alt="Newspost post" />
+              </div>
+              <div className="newspost-body">
+                <strong className="d-inline-block mb-2 text-primary placeholder-glow">{postItem.attributes.newsTitle}</strong>
+                <h2 className="placeholder-glow">{postItem.attributes.newsTagline.slice(0, 60) + " ..."}</h2>
+                <div className="placeholder-glow">
+                  <ReactMarkdown children={postItem.attributes.newsDescription.slice(0, 150) + " ....."} /></div>
+                  <span className="text-muted">May , 5/19/2023 , 11:40 AM</span>
+
+              </div>
+            </div>
+          </Link>
+        </div>
+        )
+      }
+
+    </div >
+
+  );
+}
+.................
+
+ {showCategoryName && (
+                    <div className="newspost-category">
+                      <strong className="d-inline-block text-primary placeholder-glow">{postItem.attributes.field.data.attributes.categoryName}</strong>
+                    </div>
+                  )}
+
+
+
+                                    <strong className="d-inline-block text-primary placeholder-glow">{postItem.attributes.field.data.attributes.categoryName}</strong>
+
+
+
+
+
+export default function Searchbar() {
+    return (
+        <form role="search">
+            <input className="form-control mt-1" type="search" placeholder="Search" aria-label="Search" />
+        </form>
+    )
+}
+
+
+{/* <ul className="pagination">
+                <li className="page-item">
+                    <a className="page-link" href="/" aria-label="Previous">
+                        <span aria-hidden="true">«</span>
+                    </a>
+                </li>
+                <li className="page-item"><a className="page-link" href="/explore-more-post">1</a></li>
+                <li className="page-item"><a className="page-link" href="/">2</a></li>
+                <li className="page-item"><a className="page-link" href="/">3</a></li>
+                <li className="page-item">
+                    <a className="page-link" href="/" aria-label="Next">
+                        <span aria-hidden="true">»</span>
+                    </a>
+                </li>
+            </ul> */}
+
+
+http://localhost:1337/api/newsposts?populate=*&filters[newsDescription][$contains]=transformer
+
+
+
+
+
+
+
+
+import { useEffect, useState } from "react";
+import ReactMarkdown from 'react-markdown'
+import { Link } from "react-router-dom";
+import Card from "../placeholders/Card";
+
+export default function Post(props) {
+  const options = {
+    timeZone: "Asia/Karachi",
+    hour12: true,
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  };
+  let category = props.category
+  let subCategory = props.subCategory
+  let search = props.search
+
+  let [post, setPost] = useState([])
+  let [loading, setLoading] = useState(false)
+  async function fetchPost() {
+    setLoading(true)
+    let apiEnd
+    if (category) {
+      apiEnd = `http://localhost:1337/api/newsposts?populate=*&filters[field][slug][$eq]=${category}`
+    }
+    if (subCategory) { console.log(subCategory)
+      apiEnd = `http://localhost:1337/api/newsposts?populate=*&filters[subfield][slug][$eq]=${subCategory}`
+    }
+  
+    if (search) {
+      apiEnd = `http://localhost:1337/api/newsposts?populate=*&filters[newsDescription][$contains]=${search}`
+    }
+    let response = await fetch(apiEnd)
+    let postResponse = await response.json()
+    setPost(postResponse.data)
+    setLoading(false)
+    console.log(postResponse.data)
+  }
+  useEffect(() => {
+    fetchPost()
+  }, [search])
+
+  if (loading)
+    return <>
+      <Card></Card>
+      <Card></Card>
+      <Card></Card>
+    </>;
+
+  return (
+    <div className="col-md-8">
+
+      { post&&
+        post?.map(postItem =>
+          <div key={postItem?.id} className="dot mb-2">
+            <Link to={`/post/${postItem?.attributes?.slug}`} className="link link-dark"  >
+              <div className="newspost">
+                <div className="newspost-post">
+                  <img src={"http://localhost:1337" + postItem?.attributes?.newsImage.data.attributes.url}
+                    width="200" height="134" alt="Newspost post" />
+                </div>
+                <div className="newspost-body">
+
+                  {/* <strong className="d-inline-block text-primary placeholder-glow">{postItem?.attributes?.field.data.attributes?.categoryName}</strong> */}
+                  <h3 className="m-1 placeholder-glow">{postItem?.attributes?.newsTagline.slice(0, 60) + "..."}</h3>
+                  <div className="placeholder-glow">
+                    <ReactMarkdown children={postItem?.attributes?.newsDescription.slice(0, 150) + " ....."} /></div>
+                  <span className="text-muted">{new Date(postItem?.attributes?.createdAt).toLocaleString("en-US", options)}</span>
+
+                </div>
+              </div>
+            </Link>
+          </div>
+        )
+      }
+    </div >
+
+  );
+}
+
+
+let Category = (props) => {
+    return (
+        <ul className="navbar-nav justify-content-center">
+            <li className="nav-item dropdown">
+                <Link className="nav-link text-light  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" to={`/${props.category}`}>{props.category}</Link>
+                <ul className="dropdown-menu">
+                    {
+                        props.subCategory.map(category => <li key={category.id}><Link className="dropdown-item " to={`/news/${category.attributes.slug}`}>
+                            {category.attributes.subTitles}</Link></li>)
+                    }
+
+                </ul>
+            </li>
+        </ul>
+    )
+}
+{/* {
+                                categories.map(cat => <Category key={cat.id} category={cat.attributes.categoryName}
+                                    subCategory={subCategories.filter(subcat => subcat.attributes.category.data.id === cat.id)} />)
+                            } */}
+
+
+
+    // let [subCategories, setSubCategories] = useState([])
+    // async function fetchSubCategories() {
+    //     let response = await fetch('http://localhost:1337/api/sub-categories?populate=*')
+    //     let subCategoriesResponse = await response.json()
+    //     setSubCategories(subCategoriesResponse.data)
+    // }
+    // useEffect(() => {
+    //     fetchSubCategories()
+    // }, [])
+
+
+
+    import { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
+import Pills from "../placeholders/Pills";
+export default function Badge(props) {
+
+
+    let limit = props.limit
+    let [categories, setCategories] = useState([])
+    let [loading, setLoading] = useState(false);
+
+    async function fetchCategories() {
+        setLoading(true)
+        let apiEnd = 'http://localhost:1337/api/categories?populate=*'
+        if (limit) {
+            apiEnd = `http://localhost:1337/api/categories?pagination[start]=6&pagination[limit]=11&populate=*`
+        }
+
+        // let response = await fetch(`http://localhost:1337/api/categories?pagination[start]=6&pagination[limit]=11&populate=*`)
+        let response = await fetch(apiEnd)
+        let categoriesResponse = await response.json()
+        setCategories(categoriesResponse.data)
+        setLoading(false)
+    }
+    useEffect(() => {
+        fetchCategories()
+    }, [])
+
+    if (loading)
+        return <>
+            <div className="d-flex">
+                <Pills />
+                <Pills />
+                <Pills />
+            </div>
+        </>
+
+    return (
+
+        <div className="pill">
+            {
+                categories.map(categoryItem =>
+                    <div key={categoryItem.id} className="pill">
+                        <div className="field position-relative  border-dark text-dark px-3 py-2"><Link className="link text-dark"
+                            to={`/category/post/${categoryItem.attributes.slug}`}>
+                            <span> {categoryItem.attributes.categoryName}</span></Link>
+                        </div>
+                    </div>
+
+                )
+            }
+
+
+        </div>
+
+    );
+}
+
+
+POST COMPONENT
+
+
+import { useEffect, useState } from "react";
+import ReactMarkdown from 'react-markdown'
+import { Link } from "react-router-dom";
+import Card from "../placeholders/Card";
+// import Pagination from "./Pagination";
+// import axios from 'axios';
+export default function Post(props) {
+  const options = {
+    timeZone: "Asia/Karachi",
+    hour12: true,
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  };
+  let category = props.category
+
+  let search = props.search
+
+  let [post, setPost] = useState([])
+
+  
+
+  let [loading, setLoading] = useState(false)
+  async function fetchPost() {
+    setLoading(true)
+    let apiEnd = 'http://localhost:1337/api/newsposts?populate=*'
+    if (category) {
+      apiEnd = `http://localhost:1337/api/newsposts?populate=*&filters[field][slug][$eq]=${category}`
+    }
+
+    if (search) {
+      apiEnd = `http://localhost:1337/api/newsposts?populate=*&filters[newsDescription][$contains]=${search}`
+    }
+    let response = await fetch(apiEnd)
+    let postResponse = await response.json()
+    setPost(postResponse.data)
+    setLoading(false)
+    console.log(postResponse.data)
+  }
+  useEffect(() => {
+    fetchPost()
+  }, [search])
+
+  if (loading)
+    return <>
+      <Card></Card>
+      <Card></Card>
+      <Card></Card>
+    </>;
+
+  return (
+    <div className="col-md-8">
+
+      {post &&
+        post?.map(postItem =>
+          <div key={postItem?.id} className="dot mb-2">
+            <Link to={`/post/${postItem?.attributes?.slug}`} className="link link-dark"  >
+              <div className="newspost">
+                <div className="newspost-post">
+                  <img src={"http://localhost:1337" + postItem?.attributes?.newsImage.data.attributes.url}
+                    width="200" height="134" alt="Newspost post" />
+                </div>
+                <div className="newspost-body">
+
+                  <strong className="d-inline-block text-primary placeholder-glow">{postItem?.attributes?.field.data.attributes?.categoryName}</strong>
+                  <h3 className="m-1 placeholder-glow">{postItem?.attributes?.newsTagline.slice(0, 55) + "..."}</h3>
+                  <div className="placeholder-glow">
+                    <ReactMarkdown children={postItem?.attributes?.newsDescription.slice(0, 100) + " ....."} /></div>
+                  <span className="text-muted">{new Date(postItem?.attributes?.createdAt).toLocaleString("en-US", options)}</span>
+
+                </div>
+              </div>
+            </Link>
+          </div>
+        )
+      }
+     
+    </div >
+
+  );
+}
+....................................................................................................................
+
+pagination
+...........
+// export default function Pagination() {
+//   return (
+//     <>
+//       <ul className="pagination">
+//         <li className="page-item">
+//           <a className="page-link" href="/" aria-label="Previous">
+//             <span aria-hidden="true">«</span>
+//           </a>
+//         </li>
+//         <li className="page-item"><a className="page-link" href="/explore-more-post">1</a></li>
+//         <li className="page-item"><a className="page-link" href="/">2</a></li>
+//         <li className="page-item"><a className="page-link" href="/">3</a></li>
+//         <li className="page-item">
+//           <a className="page-link" href="/" aria-label="Next">
+//             <span aria-hidden="true">»</span>
+//           </a>
+//         </li>
+//       </ul>
+//     </>
+//   )
+// }
+
+import React from "react";
+import { Link } from "react-router-dom";
+export default function Pagination({ currentPage, pageCount, onPageChange }) {
+  const handlePageChange = (page) => {
+    onPageChange(page);
+  };
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= pageCount; i++) {
+      pageNumbers.push(
+        <li className={`page-item ${currentPage === i ? "active" : ""}`} key={i}>
+          <Link className="page-link" to="/" onClick={() => handlePageChange(i)}>
+            {i}
+          </Link>
+        </li>
+      );
+    }
+    return pageNumbers;
+  };
+
+  return (
+   
+    <ul className="pagination">
+      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+        <Link className="page-link" to="/" onClick={() => handlePageChange(currentPage - 1)} aria-label="Previous">
+          <span aria-hidden="true">Prev</span>
+        </Link>
+      </li>
+      {renderPageNumbers()}
+      <li className={`page-item ${currentPage === pageCount ? "disabled" : ""}`}>
+        <Link className="page-link" to="/" onClick={() => handlePageChange(currentPage + 1)} aria-label="Next">
+          <span aria-hidden="true">Next</span>
+        </Link>
+      </li>
+    </ul>
+  );
+}
+....................
+
